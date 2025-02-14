@@ -7,13 +7,13 @@ import scipy
 def normalize_data(x):
     if not isinstance(x, np.ndarray):
         x = np.array(x)
-    mean = np.mean(x)
-    sd = np.std(x)
+    mean = np.mean(x, axis=0)
+    sd = np.std(x, axis=0)
     return (x-mean)/sd
 
 def calculate_eigen(z):
     # Take co-variance matrix C of z
-    cov = np.cov(z)
+    cov = np.cov(z, rowvar=False)
     # Calculate eignevalues and eigenvector of C
     eigenvalues, eigenvectors = np.linalg.eig(cov)
     return eigenvalues, eigenvectors
@@ -22,21 +22,20 @@ def calculate_eigen(z):
 
 def eigen_value_profile(x, d):
     
-    _, values, _ = pca(x, d)
+    z = normalize_data(x)
+    eigenvalues, eigenvectors = calculate_eigen(z)
+    # Sort and take d highest eigenvalues
+    sorted_indices = np.argsort(eigenvalues)[::-1]
+    values = eigenvalues[sorted_indices]
 
     x = range(1, len(values) + 1)
-    plt.plot(x,values)
+    plt.plot(x,values, color='purple')
 
     plt.xlabel("Index eigen-value")
     plt.ylabel("Eigen-value")
-    plt.legend(title="Eigen-value Profile of the Dataset",
-    bbox_to_anchor=(1.05, 1),
-    loc="upper left"
-    )
+    plt.title("Eigen-value Profile of the Dataset")
     plt.tight_layout()
     plt.savefig(sys.stdout.buffer)
-
-
 
 #def input_data_sample():
 
@@ -44,13 +43,13 @@ def eigen_value_profile(x, d):
 def pca(x, d):
     z = normalize_data(x)
     eigenvalues, eigenvectors = calculate_eigen(z)
+
+    eig_pairs = sorted(zip(eigenvalues, eigenvectors.T), key=lambda x: x[0], reverse=True)
     # Sort and take d highest eigenvalues
-    eig_map = {eigenvalues[i]: eigenvectors[i] for i in range(len(eigenvalues))}
-    eig_map_sorted = dict(sorted(eig_map.items(), reverse=True))
-    values = np.array(list(eig_map_sorted.keys()))[0:d]
-    vectors = np.array(list(eig_map_sorted.values()))[0:d]
+    values = np.array([p[0] for p in eig_pairs])
+    vectors = np.array([p[1] for p in eig_pairs])[:d,:].T
     # Reduce the dimensionality of Z
-    reduced_z = vectors @ z
+    reduced_z = z @ vectors
     return vectors, values, reduced_z
 
 dict_in = scipy.io.loadmat("COIL20.mat")
