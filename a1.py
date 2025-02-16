@@ -4,6 +4,7 @@ import numpy as np
 import scipy
 
 
+
 def normalize_data(x):
     if not isinstance(x, np.ndarray):
         x = np.array(x)
@@ -21,23 +22,24 @@ def calculate_eigen(z):
 #def dimension_reduced_data(x,y,d,perplexity,random_state):
 
 def eigen_value_profile(x, d):
-    
-    z = normalize_data(x)
-    eigenvalues, eigenvectors = calculate_eigen(z)
-    # Sort and take d highest eigenvalues
-    sorted_indices = np.argsort(eigenvalues)[::-1]
-    values = eigenvalues[sorted_indices]
+    _, values, _ = pca(x, d)
 
     x = range(1, len(values) + 1)
-    plt.plot(x,values, color='purple')
 
-    plt.xlabel("Index eigen-value")
-    plt.ylabel("Eigen-value")
-    plt.title("Eigen-value Profile of the Dataset")
+    fig, ax = plt.subplots(figsize=(6.4,4.8), dpi=100)
+    ax.plot(x,values, color='purple')
+
+    ax.set_xlabel("Index eigen-value")
+    ax.set_ylabel("Eigen-value")
+    ax.set_title("Eigen-value Profile of the Dataset")
+    fig.savefig(sys.stdout.buffer)
+
+def input_data_sample():
+    plt.figure(figsize=(6.4,4.8), dpi=100)
+    plt.title("Input data sample as an image")
+    plt.imshow(np.reshape(x_coords[0,:],(32,32)))
     plt.tight_layout()
     plt.savefig(sys.stdout.buffer)
-
-#def input_data_sample():
 
 # Output: Principal components, eigen-values, reduced version of data set
 def pca(x, d):
