@@ -20,27 +20,26 @@ def calculate_eigen(z):
     return eigenvalues, eigenvectors
 
 def dimension_reduced_data(x, y, d, perplexity, random_state):
-    colors = ["blue", "orange", "green", "red", "purple", "brown", "pink", "grey", "olive", "cyan"]
+    #colors = ["teal", "gold", "lime", "indigo", "magenta", "yellow", "darkblue", "darkred", "lightblue", "lightgreen"]
     _, _, z = pca(x, d)
     tsne = sklearn.manifold.TSNE(n_components=2, random_state=random_state, perplexity=perplexity)
     z_2d = tsne.fit_transform(z)
-    print(np.shape(z_2d))
     plt.figure(figsize=(6.4,4.8), dpi=100)
     for i, point in enumerate(z_2d):
-        plt.plot(point[0], point[1], marker = "o", color=colors[((int) (i / 72)) % len(colors)], label=f"Class {(int) (i / 72)}")
+        plt.plot(point[0], point[1], marker = "o", label=f"Class {(int) (i / 72)}")
     plt.legend(
         title="Object ID",
         bbox_to_anchor=(1.05, 1),
         loc="upper left"
     )
     plt.tight_layout()
-    plt.savefig("plot.png")
+    plt.savefig("Plot.png")
 
 def eigen_value_profile(x, d):
     _, values, _ = pca(x, d)
 
-    fig, ax = plt.subplots(figsize=(6.4,4.8), dpi=100)
-    ax.plot(x,values, color='purple')
+    fig, ax = plt.subplots(figsize=(6.4, 4.8))
+    ax.plot(values, color='purple')
 
     ax.set_xlabel("Index eigen-value")
     ax.set_ylabel("Eigen-value")
@@ -48,10 +47,8 @@ def eigen_value_profile(x, d):
     fig.savefig(sys.stdout.buffer)
 
 def input_data_sample():
-    plt.figure(figsize=(6.4,4.8), dpi=100)
     plt.title("Input data sample as an image")
     plt.imshow(np.reshape(x_coords[0,:],(32,32)))
-    plt.tight_layout()
     plt.savefig(sys.stdout.buffer)
 
 # Output: Principal components, eigen-values, reduced version of data set
@@ -70,6 +67,4 @@ def pca(x, d):
 dict_in = scipy.io.loadmat("COIL20.mat")
 x_coords = np.array(dict_in['X'])
 y_coords = np.array(dict_in['Y'])
-print(y_coords[73])
-print(np.shape(y_coords))
 dimension_reduced_data(x_coords, y_coords, 40, 4, 42)
