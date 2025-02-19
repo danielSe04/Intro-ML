@@ -40,15 +40,18 @@ def dimension_reduced_data(x, y, d, perplexity, random_state):
     tsne = sklearn.manifold.TSNE(n_components=2, random_state=random_state, perplexity=perplexity)
     z_2d = tsne.fit_transform(z)
     plt.figure(figsize=(6.4,4.8), dpi=100)
-    for i, point in enumerate(z_2d):
-        plt.plot(point[0], point[1], marker = "o", label=f"Class {(int) (i / 72)}")
+    for i in range(0, len(z_2d), 72):
+        plt.scatter(z_2d[i:i+72, 0], z_2d[i:i+72, 1], s=15, label=f"Class {(int) (i / 72) + 1}")
     plt.legend(
         title="Object ID",
         bbox_to_anchor=(1.05, 1),
         loc="upper left"
     )
+    plt.title("t-SNE visualization of dimension reduced data")
+    plt.xlabel("t-SNE 1")
+    plt.ylabel("t-SNE 2")
     plt.tight_layout()
-    plt.savefig("Plot.png")
+    plt.savefig(sys.stdout.buffer)
 
 '''
 This function outputs the distribution of the eigenvalues of the dataset.
