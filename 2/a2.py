@@ -20,7 +20,7 @@ def plot_dendrogram(linkage_measure: str, calc_thresholds: bool):
     linkage_matrix = hier.linkage(data, method=linkage_measure, metric="euclidean")
     fig, ax = plt.subplots(figsize=(6.4,4.8), dpi=100)
     dendro = hier.dendrogram(linkage_matrix, ax=ax)
-    ax.set_title("Dendogram - single measure")
+    ax.set_title(f"Dendrogram - {linkage_measure} measure")
     ax.set_xlabel("Observations")
     ax.set_ylabel("Dissimilarity")
     ax.set_xticks([])
