@@ -24,6 +24,19 @@ def plot_dendrogram(linkage_measure: str, calc_thresholds: bool):
     ax.set_xlabel("Observations")
     ax.set_ylabel("Dissimilarity")
     ax.set_xticks([])
+    if calc_thresholds:
+        if linkage_measure == "single":
+            lines = [0.13, 0.14, 0.15]
+        elif linkage_measure == "average":
+            lines = [0.26, 0.3, 0.4]
+        elif linkage_measure == "complete":
+            lines = [0.55, 0.63, 0.75]
+        elif linkage_measure == "ward":
+            lines = [1.1, 2, 3]
+        else:
+            lines = []
+        for line in lines:
+            ax.axhline(y= line, color = "black", linestyle="--")
     fig.savefig(sys.stdout.buffer)
 
 def agglomerative_clustering(measure: str, k: int):
