@@ -4,6 +4,7 @@ import sys
 import matplotlib.pyplot as plt
 import scipy.cluster.hierarchy as hier
 from sklearn.cluster import AgglomerativeClustering
+from sklearn.metrics import silhouette_score
 
 def plot_data_using_scatter_plot():
     data_x = data[:, 0]
@@ -41,7 +42,6 @@ def plot_dendrogram(linkage_measure: str, calc_thresholds: bool):
 
 def agglomerative_clustering(measure: str, k: int):
     a = AgglomerativeClustering(n_clusters=k, linkage=measure).fit(data)
-    fitted_data = []
     labels = a.labels_
     #for i in range(k):
      #   points = [data[j] for j in range(len(data)) if i == a.labels_[j]]
@@ -49,8 +49,14 @@ def agglomerative_clustering(measure: str, k: int):
     plt.title(f"Clustering results for {k} clusters, using '{measure}' measure")
     plt.xlabel("First feature")
     plt.ylabel("Second feature")
-    plt.savefig(sys.stdout.buffer)
+    plt.savefig("plot.png")
     plt.close()
+
+def generateSilhoutteScore(measure: str, k: int):
+    a = AgglomerativeClustering(n_clusters=k, linkage=measure).fit(data)
+    labels = a.labels_
+    score = silhouette_score(data, labels)
+    print(f"Silhoutte score using measur {measure} for k = {k} clusters: {score:.3f}")
 
 data = [] 
 with open("data_clustering.csv", "r") as f:
@@ -58,3 +64,11 @@ with open("data_clustering.csv", "r") as f:
     for line in csv_file:
         data.append([float(line[0]), float(line[1])])
 data = np.array(data)
+
+agglomerative_clustering("average", k=4)
+
+types = ["single", "average", "complete", "ward"]
+ks = [2,3,4]
+for type in types:
+    for k in ks:
+        generateSilhoutteScore(type, k)
