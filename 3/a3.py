@@ -3,12 +3,16 @@ import math
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
+import heapq
 from collections import deque
+
+def calculateDistance(point1, point2):
+    return math.sqrt((point1[0]-point2[0])**2 + (point1[1]-point2[1])**2)
 
 def region_query(D, P, eps: float) -> list:
     neighbor_points = []
     for i,point in enumerate(D):
-        if math.sqrt((point[0]-P[0])**2 + (point[1]-P[1])**2) <= eps:
+        if calculateDistance(point, P) <= eps:
             neighbor_points.append(i)
     return neighbor_points
 
@@ -55,7 +59,32 @@ def plot_db_scan(D, eps, k):
     plt.title(f"DBSCAN clustering with MinPt={k},eps={eps}")
     plt.xlabel("First feature")
     plt.ylabel("Second feature")
-    plt.savefig("plot.png")
+    plt.savefig(sys.stdout.buffer)
+    plt.close()
+
+def plot_knn(D: list, k: int, y = None):
+    smallest_distances = []
+    for i,point in enumerate(D):
+        # We are going to use a heap to store the k smallest distances
+        k_smallest_distances = []
+        for other in D:
+            
+            distance = calculateDistance(point, other)
+            if len(k_smallest_distances) < k:
+                heapq.heappush(k_smallest_distances, -distance)
+            elif distance < -k_smallest_distances[0]:
+                heapq.heappushpop(k_smallest_distances, -distance)
+        smallest_distances.append(-min(k_smallest_distances))
+    
+    smallest_distances = sorted(smallest_distances)
+    x = [i for i in range(0, len(smallest_distances))]
+    plt.plot(x, smallest_distances)
+    if not (y == None):
+        plt.axhline(y=y, linestyle='--')
+    plt.title(f"{k} Nearest Neighbor graph")
+    plt.xlabel("Points sorted by distance")
+    plt.ylabel(f"{k}-Nearest Neighbor Distance")
+    plt.savefig(sys.stdout.buffer)
     plt.close()
 
 
@@ -65,5 +94,5 @@ with open("data_clustering.csv", "r") as f:
     for line in csv_file:
         data.append((float(line[0]), float(line[1]), -2))
 #data = np.array(data)
-plot_db_scan(data, 0.04, 2)
-
+#plot_db_scan(data, 0.04, 2)
+#plot_knn(data, 3)
