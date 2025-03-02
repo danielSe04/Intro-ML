@@ -40,7 +40,7 @@ def DBSCAN(D, eps: float, MinPts: int):
                 continue
             cluster_index += 1
             D = expand_cluster(D, i, neighbour_pts, cluster_index, eps, MinPts)
-    return [point[2] for point in D]
+    return np.array([point[2] for point in D])
 
 def plot_db_scan(D, eps, k):
     types = DBSCAN(D, eps, k)
@@ -55,7 +55,7 @@ def plot_db_scan(D, eps, k):
     plt.title(f"DBSCAN clustering with MinPt={k},eps={eps}")
     plt.xlabel("First feature")
     plt.ylabel("Second feature")
-    plt.savefig(sys.stdout.buffer)
+    plt.savefig("plot.png")
     plt.close()
 
 
@@ -65,4 +65,5 @@ with open("data_clustering.csv", "r") as f:
     for line in csv_file:
         data.append((float(line[0]), float(line[1]), -2))
 #data = np.array(data)
-#plot_db_scan(data, 0.04, 3)
+plot_db_scan(data, 0.04, 2)
+
