@@ -51,14 +51,14 @@ def plot_db_scan(D, eps, k):
     x = [point[0] for point in D]
     y = [point[1] for point in D]
 
-
-    scatter = plt.scatter(x,y, c=types, cmap="viridis", edgecolors="k")
-    handles, labels = scatter.legend_elements()
-    legend = plt.legend(handles=handles, labels=labels, title="Clusters")
-    plt.gca().add_artist(legend)
+    plt.figure()
+    scatter = plt.scatter(x,y, c=types, edgecolors = "k")
     plt.title(f"DBSCAN clustering with MinPt={k},eps={eps}")
-    plt.xlabel("First feature")
-    plt.ylabel("Second feature")
+    plt.xlabel('First feature')
+    plt.ylabel('Second feature')
+
+    legend = plt.legend(*scatter.legend_elements(num=sorted(np.unique(types))), title="Clusters")
+    plt.gca().add_artist(legend)
     plt.savefig(sys.stdout.buffer)
     plt.close()
 
@@ -93,6 +93,5 @@ with open("data_clustering.csv", "r") as f:
     csv_file = csv.reader(f)
     for line in csv_file:
         data.append((float(line[0]), float(line[1]), -2))
-#data = np.array(data)
 #plot_db_scan(data, 0.04, 2)
 #plot_knn(data, 3)
