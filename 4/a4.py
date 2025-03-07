@@ -25,10 +25,33 @@ def vector_quantization(k: int, learning_rate: float, max_epoch: int):
                     minimum = dist
                     index = k
             prototypes[index] += learning_rate * (point - prototypes[index])
-            error += minimum
-        errors.append(error)
         updated_prototypes.append(np.array(prototypes.copy()))
-    return np.array(updated_prototypes), np.array(errors)
+        for point in point_set:
+            minimum = float('inf')
+            for k in range(len(prototypes)):
+                dist = math.sqrt((point[0] - prototypes[k][0]) ** 2 + (point[1] - prototypes[k][1]) ** 2)
+                if dist < minimum:
+                    minimum = dist
+            error += minimum**2
+        errors.append(error)
+    return [np.array(prot) for prot in updated_prototypes], np.array(errors)
+
+def plot_vq(k: int, learning_rate: float, max_epoch: int):
+    prototypes, errors = vector_quantization(k, learning_rate, max_epoch)
+    plt.scatter(data[:,0], data[:,1], c="k")
+    #somehoe plot the prototypes a different colour and add their trajectory changes
+    plt.title("Trajectory of Prototypes")
+    plt.savefig(sys.stdout.buffer)
+    plt.xlabel("Feature 1")
+    plt.ylabel("Feature 2")
+
+def plot_vq_error(HVQerror_k, max_epoch: int):
+    plt.plot(HVQerror_k)
+    plt.title("Quantization Error Over Epochs")
+    plt.xlabel("Epoch")
+    plt.ylabel("Quantization Error")
+    plt.savefig(sys.stdout.buffer)
+    plt.close()
 
 data = []
 with open("simplevqdata.csv", "r") as f:
@@ -36,6 +59,8 @@ with open("simplevqdata.csv", "r") as f:
     for line in csv_file:
         data.append([float(line[0]), float(line[1])])
 data = np.array(data)
-prototype_trace, HVQ_trace = vector_quantization(k=2, learning_rate=0.1, max_epoch=100)
-print(prototype_trace)
-print(np.round(HVQ_trace, decimals = 5))
+# prototype_trace, HVQ_trace = vector_quantization(k=2, learning_rate=0.1, max_epoch=100)
+# print(prototype_trace)
+# print(np.round(HVQ_trace, decimals = 5))
+# plot_vq_error(HVQ_trace, max_epoch=100)
+# plot_vq(k=2, learning_rate=0.1, max_epoch=100)
