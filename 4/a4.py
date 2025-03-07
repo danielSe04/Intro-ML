@@ -26,6 +26,7 @@ def vector_quantization(k: int, learning_rate: float, max_epoch: int):
                     index = k
             prototypes[index] += learning_rate * (point - prototypes[index])
         updated_prototypes.append(np.array(prototypes.copy()))
+        # Calculate error
         for point in point_set:
             minimum = float('inf')
             for k in range(len(prototypes)):
@@ -38,12 +39,19 @@ def vector_quantization(k: int, learning_rate: float, max_epoch: int):
 
 def plot_vq(k: int, learning_rate: float, max_epoch: int):
     prototypes, errors = vector_quantization(k, learning_rate, max_epoch)
-    plt.scatter(data[:,0], data[:,1], c="k")
-    #somehoe plot the prototypes a different colour and add their trajectory changes
-    plt.title("Trajectory of Prototypes")
-    plt.savefig(sys.stdout.buffer)
+    colors = ['red','blue', 'yellow', 'green']
+    plt.scatter(data[:,0], data[:,1], edgecolors='k')
+    for i in range(k):
+        prototype_x = [p[i][0] for p in prototypes[:-1]]
+        prototype_y = [p[i][1] for p in prototypes[:-1]]
+        print(len(prototype_x), len(prototype_y))
+        plt.scatter(prototype_x, prototype_y, c=colors[i%len(colors)])
+        plt.plot(prototype_x, prototype_y, c=colors[i%len(colors)])
+    plt.title("Trajectory Of Prototypes")
     plt.xlabel("Feature 1")
     plt.ylabel("Feature 2")
+    plt.savefig(sys.stdout.buffer)
+    plt.close()
 
 def plot_vq_error(HVQerror_k, max_epoch: int):
     plt.plot(HVQerror_k)
@@ -63,4 +71,4 @@ data = np.array(data)
 # print(prototype_trace)
 # print(np.round(HVQ_trace, decimals = 5))
 # plot_vq_error(HVQ_trace, max_epoch=100)
-# plot_vq(k=2, learning_rate=0.1, max_epoch=100)
+#plot_vq(k=2, learning_rate=0.1, max_epoch=100)
